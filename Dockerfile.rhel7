@@ -65,7 +65,7 @@ RUN yum repolist > /dev/null && \
     yum-config-manager --enable rhel-7-server-rpms && \
 	yum-config-manager --enable rhel-7-server-eus-rpms && \
     yum-config-manager --enable rhel-7-server-optional-rpms && \
-    yum groupinstall 'Development Tools' \
+    yum groupinstall 'Development Tools' && \
 	INSTALL_PKGS="wget" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
