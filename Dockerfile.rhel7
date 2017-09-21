@@ -75,6 +75,10 @@ RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
+	
+# install the Oracle dependencies.
+COPY oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm
+COPY oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
 
 RUN cd /tmp/oraclelibs && \
     rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
