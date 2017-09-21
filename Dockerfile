@@ -40,7 +40,7 @@ COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
 RUN yum install -y centos-release-scl-rh && \
-    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql95 rh-postgresql95-postgresql-contrib nss_wrapper rh-postgresql94-postgresql-server" && \
+    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql95 rh-postgresql95-postgresql-contrib nss_wrapper rh-postgresql94-postgresql-server postgresql-devel" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
@@ -50,6 +50,25 @@ RUN yum install -y centos-release-scl-rh && \
     /usr/libexec/fix-permissions /var/lib/pgsql && \
     /usr/libexec/fix-permissions /var/run/postgresql
 
+# install dev tools used to compile ORACLE_FDW_2_0_0
+RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+    yum-config-manager --enable rhel-7-server-rpms && \
+	yum-config-manager --enable rhel-7-server-eus-rpms && \
+    yum-config-manager --enable rhel-7-server-optional-rpms && \	
+    yum -y groupinstall 'Development Tools' && \
+    yum clean all
+	
+# install dev tools used to compile ORACLE_FDW_2_0_0
+RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+    yum-config-manager --enable rhel-7-server-rpms && \
+	yum-config-manager --enable rhel-7-server-eus-rpms && \
+    yum-config-manager --enable rhel-7-server-optional-rpms && \	
+	INSTALL_PKGS="wget libaio-devel" && \
+    yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
+    rpm -V $INSTALL_PKGS && \
+    yum clean all
+
+	
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
     ENABLED_COLLECTIONS=rh-postgresql95
@@ -64,6 +83,23 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     PROMPT_COMMAND=". ${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
 VOLUME ["/var/lib/pgsql/data"]
+
+# install the Oracle dependencies.
+COPY oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm
+COPY oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
+
+
+RUN cd /tmp/oraclelibs && \
+    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
+    rpm -Uvh oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
+
+# aquire and build ORACLE_FDW_2_0_0	
+RUN cd /tmp && \
+    wget https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
+	tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
+	cd oracle_fdw-ORACLE_FDW_2_0_0  && \
+	make && \
+    make install	
 
 USER 26
 
