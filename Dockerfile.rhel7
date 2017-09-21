@@ -81,8 +81,9 @@ COPY oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/orac
 COPY oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
 
 RUN cd /tmp/oraclelibs && \
-    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
     rpm -Uvh oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
+    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm 
+
 
 # aquire and build ORACLE_FDW_2_0_0	
 RUN cd /tmp && \
