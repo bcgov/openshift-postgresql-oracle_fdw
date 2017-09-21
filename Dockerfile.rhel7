@@ -59,14 +59,18 @@ RUN yum repolist > /dev/null && \
     /usr/libexec/fix-permissions /var/run/postgresql
 
 # install dev tools used to compile ORACLE_FDW_2_0_0
-RUN yum repolist > /dev/null && \
-    yum groups mark convert && \
-    yum-config-manager --disable \* &> /dev/null && \
-    yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum-config-manager --enable rhel-7-server-rpms && \
 	yum-config-manager --enable rhel-7-server-eus-rpms && \
-    yum-config-manager --enable rhel-7-server-optional-rpms && \
-    yum groupinstall 'Development Tools' && \
+    yum-config-manager --enable rhel-7-server-optional-rpms && \	
+    yum -y groupinstall 'Development Tools' && \
+    yum clean all
+	
+# install dev tools used to compile ORACLE_FDW_2_0_0
+RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+    yum-config-manager --enable rhel-7-server-rpms && \
+	yum-config-manager --enable rhel-7-server-eus-rpms && \
+    yum-config-manager --enable rhel-7-server-optional-rpms && \	
 	INSTALL_PKGS="wget libaio-devel" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
