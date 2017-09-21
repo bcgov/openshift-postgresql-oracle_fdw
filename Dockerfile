@@ -84,14 +84,15 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
 
 VOLUME ["/var/lib/pgsql/data"]
 
-# install the Oracle dependencies.
+# install the Oracle dependencies./tmp/oracle_fdw-ORACLE_FDW_2_0_0/oracle_fdw.control
 COPY oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm
 COPY oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
 
 
 RUN cd /tmp/oraclelibs && \
-    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
     rpm -Uvh oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
+    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm 
+
 
 # aquire and build ORACLE_FDW_2_0_0	
 RUN cd /tmp && \
@@ -101,6 +102,8 @@ RUN cd /tmp && \
 	make && \
     make install	
 
+RUN cp /tmp/oracle_fdw-ORACLE_FDW_2_0_0/oracle_fdw.control /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
+	
 USER 26
 
 ENTRYPOINT ["container-entrypoint"]
