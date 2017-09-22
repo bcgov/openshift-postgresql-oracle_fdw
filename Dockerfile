@@ -94,8 +94,8 @@ RUN cd /tmp/oraclelibs && \
     rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm 
 COPY root /
 
-ENV libdir = /opt/rh/rh-postgresql95/root/usr/lib64
-
+ENV PGCONFIG /opt/rh/rh-postgresql95/root/usr/bin
+ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
 # aquire and build ORACLE_FDW_2_0_0	
 RUN cd /tmp && \
     wget https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
