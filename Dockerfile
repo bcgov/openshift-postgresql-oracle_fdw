@@ -99,10 +99,11 @@ RUN cd /tmp && \
     wget https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
 	tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
 	cd oracle_fdw-ORACLE_FDW_2_0_0  && \
-	make && \
-    make install	
+	make libdir=/opt/rh/rh-postgresql95/root/usr/lib64 && \
+    make install libdir=/opt/rh/rh-postgresql95/root/usr/lib64	
 
 RUN cp -R /usr/share/pgsql/extension/* /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
+RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension
 	
 USER 26
 
