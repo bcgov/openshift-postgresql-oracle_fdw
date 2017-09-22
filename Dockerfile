@@ -104,13 +104,15 @@ RUN cd /tmp && \
 	make && \
     make install 
 	
+# copy the extension.
 RUN cp -R /usr/share/pgsql/extension/* /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
-RUN cp /usr/lib64/pgsql/oracle_fdw.so /opt/rh/rh-postgresql95/root/usr/lib64
-RUN cp /usr/lib64/pgsql/oracle_fdw.so /opt/rh/rh-postgresql95/root/usr/lib
+RUN cp /usr/lib64/pgsql/oracle_fdw.so /opt/rh/rh-postgresql95/root/usr/lib64/pgsql
 
 RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
 RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/lib64	
-RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/lib
+
+# set the oracle library path
+ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
 	
 USER 26
 
