@@ -102,7 +102,7 @@ RUN cd /tmp && \
 	make && \
     make install	
 
-RUN cp -R /tmp/oracle_fdw-ORACLE_FDW_2_0_0/* /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
+# RUN cp -R /tmp/oracle_fdw-ORACLE_FDW_2_0_0/* /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
 	
 USER 26
 
