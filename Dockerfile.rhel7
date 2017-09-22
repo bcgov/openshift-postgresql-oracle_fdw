@@ -112,8 +112,11 @@ RUN cd /tmp && \
 	
 RUN cp -R /usr/share/pgsql/extension/* /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
 RUN cp /usr/lib64/pgsql/oracle_fdw.so /opt/rh/rh-postgresql95/root/usr/lib64
+RUN cp /usr/lib64/pgsql/oracle_fdw.so /opt/rh/rh-postgresql95/root/usr/lib
+
 RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
 RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/lib64	
+RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/lib
 
 USER 26
 
