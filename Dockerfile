@@ -40,7 +40,7 @@ COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
 RUN yum install -y centos-release-scl-rh && \
-    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql95 rh-postgresql95-postgresql-contrib nss_wrapper rh-postgresql94-postgresql-server rh-postgresql95-postgresql-devel postgresql-devel" && \
+    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql95 rh-postgresql95-postgresql-contrib nss_wrapper rh-postgresql95-postgresql-server rh-postgresql95-postgresql-devel postgresql-devel" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
@@ -96,6 +96,7 @@ COPY root /
 
 ENV PGCONFIG /opt/rh/rh-postgresql95/root/usr/bin
 ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
+
 # aquire and build ORACLE_FDW_2_0_0	
 RUN cd /tmp && \
     wget https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
