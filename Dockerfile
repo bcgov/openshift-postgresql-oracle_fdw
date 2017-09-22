@@ -40,7 +40,7 @@ COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
 RUN yum install -y centos-release-scl-rh && \
-    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql95 rh-postgresql95-postgresql-contrib nss_wrapper rh-postgresql95-postgresql-server rh-postgresql95-postgresql-devel postgresql-devel" && \
+    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql95 rh-postgresql95-postgresql-contrib nss_wrapper rh-postgresql95-postgresql-server rh-postgresql95-postgresql-devel" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
@@ -96,6 +96,7 @@ COPY root /
 
 ENV PGCONFIG /opt/rh/rh-postgresql95/root/usr/bin
 ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
+ENV PATH /opt/rh/rh-postgresql95/root/usr/bin/:${PATH}
 
 # aquire and build ORACLE_FDW_2_0_0	
 RUN cd /tmp && \
@@ -104,13 +105,6 @@ RUN cd /tmp && \
 	cd oracle_fdw-ORACLE_FDW_2_0_0  && \
 	make && \
     make install 
-	
-# copy the extension.
-RUN cp -R /usr/share/pgsql/extension/* /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
-RUN cp /usr/lib64/pgsql/oracle_fdw.so /opt/rh/rh-postgresql95/root/usr/lib64/pgsql
-
-RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/share/pgsql/extension	
-RUN /usr/libexec/fix-permissions /opt/rh/rh-postgresql95/root/usr/lib64	
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
