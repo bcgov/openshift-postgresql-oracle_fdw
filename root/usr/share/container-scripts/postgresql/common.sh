@@ -178,7 +178,7 @@ function create_users() {
 }
 
 function create_fdw() {
-   if [[ -v FDW_NAME && -v FDW_FOREIGN_SERVER && -v FDW_USER && -v FDW_PASS && -v FDW_FOREIGN_SCHEMA && -v FDW_SCHEMA ]]; then
+   if [[ -z "$FDW_NAME" || -z "$FDW_FOREIGN_SERVER" || -z "$FDW_USER" || -z "$FDW_PASS" || -z "$FDW_FOREIGN_SCHEMA" || -z "$FDW_SCHEMA" ]]; then
       cat >&2 <<EOF
 Foreign Data Wrapper environment variables not found.  Set the following variables to enable FDW.
   FDW_FOREIGN_SCHEMA (Oracle schema to get data from)
