@@ -177,6 +177,38 @@ function create_users() {
   fi
 }
 
+function create_fdw() {
+   if [[ -v FDW_NAME && -v FDW_FOREIGN_SERVER && -v FDW_USER && -v FDW_PASS && -v FDW_FOREIGN_SCHEMA && -v FDW_SCHEMA ]]; then
+      cat >&2 <<EOF
+Foreign Data Wrapper environment variables not found.  Set the following variables to enable FDW.
+  FDW_FOREIGN_SCHEMA (Oracle schema to get data from)
+  FDW_FOREIGN_SERVER (The Oracle server reference, for example //servername.bcgov/schemaname.bcgov')
+  FDW_NAME (The name of the foreign data wrapper)
+  FDW_PASS (Oracle password)
+  FDW_SCHEMA (Postgres schema to send data to)
+  FDW_USER (Oracle username)
+  
+EOF
+  else
+  
+   echo psql --command "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"
+   
+   echo psql $POSTGRESQL_DATABASE --command "DROP SERVER IF EXISTS ${FDW_NAME} CASCADE;"
+   echo psql $POSTGRESQL_DATABASE --command "CREATE SERVER $FDW_NAME FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '${FDW_FOREIGN_SERVER}');"
+   echo psql $POSTGRESQL_DATABASE --command "DROP USER MAPPING IF EXISTS FOR public SERVER ${FDW_NAME};"
+   echo psql $POSTGRESQL_DATABASE --command "CREATE USER MAPPING FOR public SERVER ${FDW_NAME} OPTIONS (user '${FDW_USER}', password '${FDW_PASS}');"
+   echo psql $POSTGRESQL_DATABASE --command "DROP SCHEMA IF EXISTS ${FDW_SCHEMA};"										
+   echo psql $POSTGRESQL_DATABASE --command "CREATE SCHEMA ${FDW_SCHEMA};"
+   echo psql $POSTGRESQL_DATABASE --command "IMPORT FOREIGN SCHEMA \"${FDW_FOREIGN_SCHEMA}\" FROM SERVER ${FDW_NAME} INTO ${FDW_SCHEMA};'"
+   echo psql $POSTGRESQL_DATABASE --command "DROP ROLE IF EXISTS fdw_reader;"
+   echo psql $POSTGRESQL_DATABASE --command "CREATE ROLE fdw_reader;"
+   echo psql $POSTGRESQL_DATABASE --command "GRANT USAGE ON SCHEMA ${FDW_SCHEMA} TO fdw_reader;"
+   echo psql $POSTGRESQL_DATABASE --command "GRANT SELECT ON ALL TABLES IN SCHEMA ${FDW_SCHEMA} TO fdw_reader;"
+   echo psql $POSTGRESQL_DATABASE --command "GRANT fdw_reader to \"${POSTGRESQL_USER}\";"
+   echo touch $PGDATA/fdw.conf
+  fi
+}
+
 function set_passwords() {
   if [[ ",$postinitdb_actions," = *,simple_db,* ]]; then
     psql --command "ALTER USER \"${POSTGRESQL_USER}\" WITH ENCRYPTED PASSWORD '${POSTGRESQL_PASSWORD}';"
