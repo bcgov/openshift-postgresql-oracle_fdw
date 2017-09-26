@@ -26,6 +26,11 @@ pg_ctl -w start -o "-h ''"
 if $PG_INITIALIZED ; then
     create_users
 fi
+
+if [ ! -f "$PGDATA/fdw.conf" ]; then
+  create_fdw
+fi
+
 set_passwords
 pg_ctl stop
 
