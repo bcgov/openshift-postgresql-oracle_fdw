@@ -179,21 +179,21 @@ function create_users() {
 
 function create_fdw() {
   if [[ -v FDW_NAME && -v FDW_FOREIGN_SERVER && -v FDW_USER && -v FDW_PASS && -v FDW_FOREIGN_SCHEMA && -v FDW_SCHEMA ]]; then
-    echo psql --command "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"
-   
-    echo psql $POSTGRESQL_DATABASE --command "DROP SERVER IF EXISTS ${FDW_NAME} CASCADE;"
-    echo psql $POSTGRESQL_DATABASE --command "CREATE SERVER $FDW_NAME FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '${FDW_FOREIGN_SERVER}');"
-    echo psql $POSTGRESQL_DATABASE --command "DROP USER MAPPING IF EXISTS FOR public SERVER ${FDW_NAME};"
-    echo psql $POSTGRESQL_DATABASE --command "CREATE USER MAPPING FOR public SERVER ${FDW_NAME} OPTIONS (user '${FDW_USER}', password '${FDW_PASS}');"
-    echo psql $POSTGRESQL_DATABASE --command "DROP SCHEMA IF EXISTS ${FDW_SCHEMA};"										
-    echo psql $POSTGRESQL_DATABASE --command "CREATE SCHEMA ${FDW_SCHEMA};"
-    echo psql $POSTGRESQL_DATABASE --command "IMPORT FOREIGN SCHEMA \"${FDW_FOREIGN_SCHEMA}\" FROM SERVER ${FDW_NAME} INTO ${FDW_SCHEMA};'"
-    echo psql $POSTGRESQL_DATABASE --command "DROP ROLE IF EXISTS fdw_reader;"
-    echo psql $POSTGRESQL_DATABASE --command "CREATE ROLE fdw_reader;"
-    echo psql $POSTGRESQL_DATABASE --command "GRANT USAGE ON SCHEMA ${FDW_SCHEMA} TO fdw_reader;"
-    echo psql $POSTGRESQL_DATABASE --command "GRANT SELECT ON ALL TABLES IN SCHEMA ${FDW_SCHEMA} TO fdw_reader;"
-    echo psql $POSTGRESQL_DATABASE --command "GRANT fdw_reader to \"${POSTGRESQL_USER}\";"
-    echo touch $PGDATA/fdw.conf   
+    echo Updating FDW settings...
+	psql --command "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"   
+    psql $POSTGRESQL_DATABASE --command "DROP SERVER IF EXISTS ${FDW_NAME} CASCADE;"
+    psql $POSTGRESQL_DATABASE --command "CREATE SERVER $FDW_NAME FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '${FDW_FOREIGN_SERVER}');"
+    psql $POSTGRESQL_DATABASE --command "DROP USER MAPPING IF EXISTS FOR public SERVER ${FDW_NAME};"
+    psql $POSTGRESQL_DATABASE --command "CREATE USER MAPPING FOR public SERVER ${FDW_NAME} OPTIONS (user '${FDW_USER}', password '${FDW_PASS}');"
+    psql $POSTGRESQL_DATABASE --command "DROP SCHEMA IF EXISTS ${FDW_SCHEMA};"										
+    psql $POSTGRESQL_DATABASE --command "CREATE SCHEMA ${FDW_SCHEMA};"
+    psql $POSTGRESQL_DATABASE --command "IMPORT FOREIGN SCHEMA \"${FDW_FOREIGN_SCHEMA}\" FROM SERVER ${FDW_NAME} INTO ${FDW_SCHEMA};'"
+    psql $POSTGRESQL_DATABASE --command "DROP ROLE IF EXISTS fdw_reader;"
+    psql $POSTGRESQL_DATABASE --command "CREATE ROLE fdw_reader;"
+    psql $POSTGRESQL_DATABASE --command "GRANT USAGE ON SCHEMA ${FDW_SCHEMA} TO fdw_reader;"
+    psql $POSTGRESQL_DATABASE --command "GRANT SELECT ON ALL TABLES IN SCHEMA ${FDW_SCHEMA} TO fdw_reader;"
+    psql $POSTGRESQL_DATABASE --command "GRANT fdw_reader to \"${POSTGRESQL_USER}\";"
+    touch $PGDATA/fdw.conf   
   else
     cat >&2 <<EOF
 Foreign Data Wrapper environment variables not found.  Set the following variables to enable FDW.
