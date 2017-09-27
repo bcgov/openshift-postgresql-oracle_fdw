@@ -219,8 +219,8 @@ EOF
 	COMMIT;
 EOF
 
-    psql_exit_status=$?
-    if [ $psql_exit_status != 0 ]; then
+    PSQL_EXIT_STATUS=$?
+    if [ $PSQL_EXIT_STATUS != 0 ]; then
       echo "psql failed while trying configure oracle_fdw." 1>&2
     else
       touch $PGDATA/fdw.conf   
