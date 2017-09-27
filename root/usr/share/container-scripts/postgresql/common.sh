@@ -218,7 +218,8 @@ EOF
     GRANT fdw_reader to "${POSTGRESQL_USER}";
 	COMMIT;
 EOF
-    psql_exit_status = $?
+
+    psql_exit_status=$?
     if [ $psql_exit_status != 0 ]; then
       echo "psql failed while trying configure oracle_fdw." 1>&2
     else
