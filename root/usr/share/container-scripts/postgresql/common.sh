@@ -181,24 +181,6 @@ function create_fdw() {
   if [[ -v FDW_NAME && -v FDW_FOREIGN_SERVER && -v FDW_USER && -v FDW_PASS && -v FDW_FOREIGN_SCHEMA && -v FDW_SCHEMA ]]; then
     echo Updating FDW settings...
 
-echo <<EOF
-	BEGIN;
-	CREATE EXTENSION IF NOT EXISTS oracle_fdw;   
-	CREATE EXTENSION IF NOT EXISTS pgcrypto;
-    DROP SERVER IF EXISTS ${FDW_NAME} CASCADE;
-    CREATE SERVER $FDW_NAME FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '${FDW_FOREIGN_SERVER}');
-    DROP USER MAPPING IF EXISTS FOR "${POSTGRESQL_USER}" SERVER ${FDW_NAME};
-    CREATE USER MAPPING FOR "${POSTGRESQL_USER}" SERVER ${FDW_NAME} OPTIONS (user '${FDW_USER}', password '${FDW_PASS}');
-    DROP SCHEMA IF EXISTS ${FDW_SCHEMA};										
-    CREATE SCHEMA ${FDW_SCHEMA};
-    IMPORT FOREIGN SCHEMA "${FDW_FOREIGN_SCHEMA}" FROM SERVER ${FDW_NAME} INTO ${FDW_SCHEMA};
-    DROP ROLE IF EXISTS fdw_reader;
-    CREATE ROLE fdw_reader;
-    GRANT USAGE ON SCHEMA ${FDW_SCHEMA} TO fdw_reader;
-    GRANT SELECT ON ALL TABLES IN SCHEMA ${FDW_SCHEMA} TO fdw_reader;
-    GRANT fdw_reader to "${POSTGRESQL_USER}";
-	COMMIT;
-EOF	
 	
 	psql -d $POSTGRESQL_DATABASE <<EOF
 	BEGIN;
@@ -206,8 +188,8 @@ EOF
 	CREATE EXTENSION IF NOT EXISTS pgcrypto;
     DROP SERVER IF EXISTS ${FDW_NAME} CASCADE;
     CREATE SERVER $FDW_NAME FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '${FDW_FOREIGN_SERVER}');
-    DROP USER MAPPING IF EXISTS FOR "${POSTGRESQL_USER}" SERVER ${FDW_NAME};
-    CREATE USER MAPPING FOR "${POSTGRESQL_USER}" SERVER ${FDW_NAME} OPTIONS (user '${FDW_USER}', password '${FDW_PASS}');
+    DROP USER MAPPING IF EXISTS FOR public SERVER ${FDW_NAME};
+    CREATE USER MAPPING FOR public SERVER ${FDW_NAME} OPTIONS (user '${FDW_USER}', password '${FDW_PASS}');
     DROP SCHEMA IF EXISTS ${FDW_SCHEMA};										
     CREATE SCHEMA ${FDW_SCHEMA};
     IMPORT FOREIGN SCHEMA "${FDW_FOREIGN_SCHEMA}" FROM SERVER ${FDW_NAME} INTO ${FDW_SCHEMA};
@@ -221,8 +203,9 @@ EOF
 
     PSQL_EXIT_STATUS=$?
     if [ $PSQL_EXIT_STATUS != 0 ]; then
-      echo "psql failed while trying configure oracle_fdw." 1>&2
+      echo "psql failed while trying configure oracle_fdw." 
     else
+	  echo "success - oracle_fdw is installed."
       touch $PGDATA/fdw.conf   
     fi
   else
