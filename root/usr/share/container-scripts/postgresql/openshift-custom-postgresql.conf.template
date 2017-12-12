@@ -20,4 +20,4 @@ shared_buffers = ${POSTGRESQL_SHARED_BUFFERS}
 # Sets the planner's assumption about the effective size of the disk cache that is available to a single query
 effective_cache_size = ${POSTGRESQL_EFFECTIVE_CACHE_SIZE}
 
-max_wal_size = 2G
+max_wal_size = 2GB
