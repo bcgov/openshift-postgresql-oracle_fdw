@@ -91,7 +91,7 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
 VOLUME ["/var/lib/pgsql/data"]
 
 # install the Oracle dependencies.
-RUN cd /tmp/oraclelibs && \
+RUN mkdir -p /tmp/oraclelibs && cd /tmp/oraclelibs && \
     wget https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm  && \
     wget https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm &&  \
     rpm -Uvh oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
