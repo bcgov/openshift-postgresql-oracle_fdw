@@ -92,8 +92,8 @@ VOLUME ["/var/lib/pgsql/data"]
 
 # install the Oracle dependencies.
 RUN mkdir -p /tmp/oraclelibs && cd /tmp/oraclelibs && \
-    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm  && \
-    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm &&  \
+    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
+    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm && \
     rpm -Uvh oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
     rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
 
@@ -101,15 +101,14 @@ COPY root /
 
 ENV PGCONFIG /opt/rh/rh-postgresql95/root/usr/bin
 ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
-
 ENV PATH /opt/rh/rh-postgresql95/root/usr/bin/:${PATH}
 
 # aquire and build ORACLE_FDW_2_0_0
 RUN cd /tmp && \
     wget -nv https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
-	tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
-	cd oracle_fdw-ORACLE_FDW_2_0_0  && \
-	make && \
+    tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
+    cd oracle_fdw-ORACLE_FDW_2_0_0   && \
+    make && \
     make install && \
     rm -rf /tmp/oraclelibs ORACLE_FDW_2_0_0.tar.gz
 
