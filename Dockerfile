@@ -104,7 +104,7 @@ RUN cd /tmp && \
     cd oracle_fdw-ORACLE_FDW_2_0_0   && \
     make && \
     make install && \
-    rm -rf /tmp/oraclelibs ORACLE_FDW_2_0_0.tar.gz
+    rm -rf /tmp/oraclelibs /tmp/ORACLE_FDW_2_0_0.tar.gz /var/cache/yum
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
