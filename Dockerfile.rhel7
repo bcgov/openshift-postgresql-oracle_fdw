@@ -106,7 +106,7 @@ ENV PATH /opt/rh/rh-postgresql95/root/usr/bin/:${PATH}
 
 # aquire and build ORACLE_FDW_2_0_0
 RUN cd /tmp && \
-    wget https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
+    wget -nv https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
 	tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
 	cd oracle_fdw-ORACLE_FDW_2_0_0  && \
 	make && \
