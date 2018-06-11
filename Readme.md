@@ -11,6 +11,8 @@ https://github.com/sclorg/postgresql-container/tree/master/9.5
 
 Refer to the above URL for a reference to the environment variables necessary to configure PostgreSQL.
 
+*NOTE*: This is meant for BC Gov Openshift Builds, as access to internal web servers are required to install the Oracle RPM's.
+
 ## FDW Environment Variables ##
 
 The following environment variables are used to configure the FDW:

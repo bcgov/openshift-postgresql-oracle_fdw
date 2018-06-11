@@ -21,3 +21,9 @@ shared_buffers = ${POSTGRESQL_SHARED_BUFFERS}
 effective_cache_size = ${POSTGRESQL_EFFECTIVE_CACHE_SIZE}
 
 max_wal_size = 2GB
+
+# Enable DB logging
+log_statement = 'all'
+log_connections = on
+log_disconnections = on
+log_duration = on

@@ -54,21 +54,21 @@ RUN yum install -y centos-release-scl-rh && \
 RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum-config-manager --enable rhel-7-server-rpms && \
 	yum-config-manager --enable rhel-7-server-eus-rpms && \
-    yum-config-manager --enable rhel-7-server-optional-rpms && \	
+    yum-config-manager --enable rhel-7-server-optional-rpms && \
     yum -y groupinstall 'Development Tools' && \
     yum clean all
-	
+
 # install dev tools used to compile ORACLE_FDW_2_0_0
 RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum-config-manager --enable rhel-7-server-rpms && \
 	yum-config-manager --enable rhel-7-server-eus-rpms && \
-    yum-config-manager --enable rhel-7-server-optional-rpms && \	
+    yum-config-manager --enable rhel-7-server-optional-rpms && \
 	INSTALL_PKGS="wget libaio-devel" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
 
-	
+
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
     ENABLED_COLLECTIONS=rh-postgresql95
@@ -85,26 +85,30 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
 VOLUME ["/var/lib/pgsql/data"]
 
 # install the Oracle dependencies./tmp/oracle_fdw-ORACLE_FDW_2_0_0/oracle_fdw.control
-COPY oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm
-COPY oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm /tmp/oraclelibs/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
-
-
-RUN cd /tmp/oraclelibs && \
+RUN mkdir -p /tmp/oraclelibs && cd /tmp/oraclelibs && \
+    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
+    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm && \
     rpm -Uvh oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
-    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm 
+    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
+
 COPY root /
 
 ENV PGCONFIG /opt/rh/rh-postgresql95/root/usr/bin
 ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
 ENV PATH /opt/rh/rh-postgresql95/root/usr/bin/:${PATH}
 
-# aquire and build ORACLE_FDW_2_0_0	
+# aquire and build ORACLE_FDW_2_0_0
 RUN cd /tmp && \
-    wget https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
-	tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
-	cd oracle_fdw-ORACLE_FDW_2_0_0  && \
-	make && \
-    make install 
+    wget -nv https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
+    tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
+    cd oracle_fdw-ORACLE_FDW_2_0_0   && \
+    make && \
+    make install && \
+    rm -rf /tmp/oraclelibs /tmp/ORACLE_FDW_2_0_0.tar.gz /var/cache/yum
+
+# set the oracle library path
+ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
+
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
