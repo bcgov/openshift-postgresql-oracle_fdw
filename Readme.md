@@ -1,5 +1,5 @@
 # OpenShift Postgresql / Oracle FDW #
-This repository can be used to build a container featuring Postgresql 9.5, Oracle FDW
+This repository can be used to build a container featuring Postgresql 9.6, Oracle FDW
 
 The container features an auto-provisioning step on startup that can be used to establish the connection to Oracle.
 
@@ -7,7 +7,7 @@ The container features an auto-provisioning step on startup that can be used to 
 
 The following open source project was used as a starting point:
 
-https://github.com/sclorg/postgresql-container/tree/master/9.5
+https://github.com/sclorg/postgresql-container/tree/master
 
 Refer to the above URL for a reference to the environment variables necessary to configure PostgreSQL.
 

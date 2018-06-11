@@ -135,7 +135,7 @@ initdb_wrapper ()
 {
   # Initialize the database cluster with utf8 support enabled by default.
   # This might affect performance, see:
-  # http://www.postgresql.org/docs/9.5/static/locale.html
+  # https://www.postgresql.org/docs/9.6/static/locale.html
   LANG=${LANG:-en_US.utf8} "$@"
 }
 
@@ -422,7 +422,7 @@ try_pgupgrade ()
   fi
 
   # We support pg_upgrade process only from previous version of this container
-  # (upgrade to N to N+1 is possible, so e.g. 9.4 to 9.5).
+  # (upgrade to N to N+1 is possible, so e.g. 9.5 to 9.6).
   if test "$POSTGRESQL_PREV_VERSION" != "$version"; then
     echo >&2 "With this container image you can only upgrade from data directory"
     echo >&2 "of version '$POSTGRESQL_PREV_VERSION', not '$version'."
