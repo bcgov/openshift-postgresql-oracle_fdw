@@ -1,5 +1,5 @@
 # OpenShift Postgresql / Oracle FDW #
-This repository can be used to build a container featuring Postgresql 9.6, Oracle FDW
+This repository can be used to build a container featuring Postgresql 10.3, Oracle FDW
 
 The container features an auto-provisioning step on startup that can be used to establish the connection to Oracle.
 

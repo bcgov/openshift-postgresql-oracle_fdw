@@ -10,8 +10,8 @@ FROM rhel7
 #  * $POSTGRESQL_ADMIN_PASSWORD (Optional) - Password for the 'postgres'
 #                           PostgreSQL administrative account
 
-ENV POSTGRESQL_VERSION=9.6 \
-    POSTGRESQL_PREV_VERSION=9.5 \
+ENV POSTGRESQL_VERSION=10.3 \
+    POSTGRESQL_PREV_VERSION=9.6 \
     HOME=/var/lib/pgsql \
     PGUSER=postgres
 
@@ -23,12 +23,12 @@ create, run, maintain and access a PostgreSQL DBMS server."
 LABEL summary=$SUMMARY \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="PostgreSQL 9.6" \
+      io.k8s.display-name="PostgreSQL 10.3" \
       io.openshift.expose-services="5432:postgresql" \
-      io.openshift.tags="database,postgresql,postgresql96,rh-postgresql96" \
-      name="rhscl/postgresql-96-rhel7" \
-      com.redhat.component="rh-postgresql96-docker" \
-      version="9.6" \
+      io.openshift.tags="database,postgresql,postgresql10,rh-postgresql10" \
+      name="rhscl/postgresql-10-rhel7" \
+      com.redhat.component="rh-postgresql10-docker" \
+      version="10.3" \
       release="1"
 
 EXPOSE 5432
@@ -49,7 +49,7 @@ RUN yum repolist > /dev/null && \
     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum-config-manager --enable rhel-7-server-rpms && \
     yum-config-manager --enable rhel-7-server-optional-rpms && \
-    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql96 rh-postgresql96-postgresql-contrib nss_wrapper rh-postgresql96-postgresql-server rh-postgresql96-postgresql-devel" && \
+    INSTALL_PKGS="rsync tar gettext bind-utils rh-postgresql10 rh-postgresql10-postgresql-contrib nss_wrapper rh-postgresql10-postgresql-server rh-postgresql10-postgresql-devel" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     localedef -f UTF-8 -i en_US en_US.UTF-8 && \
@@ -79,7 +79,7 @@ RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
-    ENABLED_COLLECTIONS=rh-postgresql96
+    ENABLED_COLLECTIONS=rh-postgresql10
 
 # When bash is started non-interactively, to run a shell script, for example it
 # looks for this variable and source the content of this file. This will enable
@@ -99,9 +99,9 @@ RUN mkdir -p /tmp/oraclelibs && cd /tmp/oraclelibs && \
 
 COPY root /
 
-ENV PGCONFIG /opt/rh/rh-postgresql96/root/usr/bin
+ENV PGCONFIG /opt/rh/rh-postgresql10/root/usr/bin
 ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
-ENV PATH /opt/rh/rh-postgresql96/root/usr/bin/:${PATH}
+ENV PATH /opt/rh/rh-postgresql10/root/usr/bin/:${PATH}
 
 # aquire and build ORACLE_FDW_2_0_0
 RUN cd /tmp && \
