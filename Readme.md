@@ -1,7 +1,70 @@
 # OpenShift Postgresql / Oracle FDW #
-This repository can be used to build a container featuring Postgresql 9.6, Oracle FDW
+This repository can be used to build a container featuring Postgresql, Oracle FDW and optionally the pgcrypto and postgis extensions.
 
 The container features an auto-provisioning step on startup that can be used to establish the connection to Oracle.
+
+## Versions ##
+PostgreSQL versions currently supported are:
+
+- postgresql-9.5
+- postgresql-9.6
+
+PostGIS versions currently supported are:
+- postGIS 2.4
+
+RHEL versions currently supported are:
+- RHEL7
+
+CentOS versions currently supported are:
+- CentOS7
+
+## Installation ## 
+
+To disable PostGIS, deploy with the environment variable POSTGIS_EXTENSION=N.
+
+To disable pgcrypto, deploy with the environment variable PGCRYPTO_EXTENSION=N.
+
+Otherwise, the deployment will default to `Y`.
+
+### Confirm extensions ### 
+
+Here are the shell commands to confirm the successful creation of the extensions (assuming POSTGIS_EXTENSION and
+PGCRYPTO_EXTENSION are set to `Y`):
+```
+sh-4.2$ psql -d ${POSTGRESQL_DATABASE} -U ${POSTGRESQL_USER} -c "\dx;"
+                                     List of installed extensions
+   Name     | Version |   Schema   |                             Description
+------------+---------+------------+---------------------------------------------------------------------
+ oracle_fdw | 1.1     | public     | foreign data wrapper for Oracle access
+ pgcrypto   | 1.3     | public     | cryptographic functions
+ plpgsql    | 1.0     | pg_catalog | PL/pgSQL procedural language
+ postgis    | 2.4.5   | public     | PostGIS geometry, geography, and raster spatial types and functions
+(4 rows)
+```
+
+Here is the shell command to confirm the verion of PostGIS ((assuming POSTGIS_EXTENSION was set to `Y`):
+```
+sh-4.2$ psql -d ${POSTGRESQL_DATABASE} -U ${POSTGRESQL_USER} -c "SELECT postgis_full_version();"
+                                      postgis_full_version
+--------------------------------------------------------------------------------------------------------
+ POSTGIS="2.4.5 r16765" PGSQL="96" GEOS="3.6.3-CAPI-1.10.3 80c13047" PROJ="Rel. 4.9.3, 15 August 2016" G
+DAL="GDAL 1.11.4, released 2016/01/25" LIBXML="2.9.1" LIBJSON="0.11" RASTER
+(1 row)
+```
+
+### Choose either the CentOS7 or RHEL7 based image: ###
+
+RHEL7 based image
+
+```
+docker build . -f rhel7.rh-postgresql96/Dockerfile
+```
+
+CentOS7 based image
+
+```
+docker build . -f centos7.rh-postgresql96/Dockerfile
+```
 
 ## Source ##
 
