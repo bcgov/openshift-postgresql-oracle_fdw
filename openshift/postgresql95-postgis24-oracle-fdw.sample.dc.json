@@ -1,0 +1,147 @@
+{
+    "kind": "DeploymentConfig",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "postgis-oracle-fdw",
+        "generation": 1,
+        "labels": {
+            "app": "postgis-oracle-fdw"
+        }
+    },
+    "spec": {
+        "strategy": {
+            "type": "Recreate",
+            "recreateParams": {
+                "timeoutSeconds": 600
+            },
+            "resources": {},
+            "activeDeadlineSeconds": 21600
+        },
+        "triggers": [
+            {
+                "type": "ConfigChange"
+            },
+            {
+                "type": "ImageChange",
+                "imageChangeParams": {
+                    "automatic": true,
+                    "containerNames": [
+                        "postgis-oracle-fdw"
+                    ],
+                    "from": {
+                        "kind": "ImageStreamTag",
+                        "namespace": "csnr-devops-lab-tools",
+                        "name": "postgis-oracle-fdw:95-24"
+                    }
+                }
+            }
+        ],
+        "replicas": 1,
+        "test": false,
+        "selector": {
+            "app": "postgis-oracle-fdw",
+            "deploymentconfig": "postgis-oracle-fdw"
+        },
+        "template": {
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "postgis-oracle-fdw",
+                    "deploymentconfig": "postgis-oracle-fdw"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftWebConsole"
+                }
+            },
+            "spec": {
+                "volumes": [
+                    {
+                        "name": "postgis-oracle-fdw-1",
+                        "emptyDir": {}
+                    },
+                    {
+                        "name": "postgis-oracle-fdw-2",
+                        "emptyDir": {}
+                    }
+                ],
+                "containers": [
+                    {
+                        "name": "postgis-oracle-fdw",
+                        "image": " ",
+                        "ports": [
+                            {
+                                "containerPort": 5432,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "env": [
+                            {
+                                "name": "POSTGRESQL_USER",
+                                "value": "demo" 
+                            },
+                            {
+                                "name": "POSTGRESQL_PASSWORD",
+                                "value": "demo" 
+                            },
+                            {
+                                "name": "POSTGRESQL_DATABASE",
+                                "value": "demo" 
+                            },
+                            {
+                                "name": "FDW_USER",
+                                "value": "demo"
+                            },
+                            {
+                                "name": "FDW_PASS",
+                                "value": "demo" 
+                            },
+                            {
+                                "name": "FDW_FOREIGN_SERVER",
+                                "value": "demo" 
+                            },
+                            {
+                                "name": "FDW_FOREIGN_SCHEMA",
+                                "value": "demo" 
+                            },
+                            {
+                                "name": "FDW_NAME",
+                                "value": "wells_oradb"
+                            },
+                            {
+                                "name": "FDW_SCHEMA",
+                                "value": "wells"
+                            },
+                            {
+                                "name": "PGCRYPTO_EXTENSION",
+                                "value": "Y"
+                            },
+                            {
+                                "name": "POSTGIS_EXTENSION",
+                                "value": "Y"
+                            }
+                        ],
+                        "resources": {},
+                        "volumeMounts": [
+                            {
+                                "name": "postgis-oracle-fdw-1",
+                                "mountPath": "/var/lib/pgsql/data"
+                            },
+                            {
+                                "name": "postgis-oracle-fdw-2",
+                                "mountPath": "/var/run/postgresql"
+                            }
+                        ],
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "imagePullPolicy": "Always"
+                    }
+                ],
+                "restartPolicy": "Always",
+                "terminationGracePeriodSeconds": 30,
+                "dnsPolicy": "ClusterFirst",
+                "securityContext": {},
+                "schedulerName": "default-scheduler"
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 FROM rhel7
 
-# PostgreSQL image for OpenShift.
+# PostgreSQL image for OpenShift with PostGIS extension.
 # Volumes:
 #  * /var/lib/psql/data   - Database cluster for PostgreSQL
 # Environment:
@@ -10,8 +10,15 @@ FROM rhel7
 #  * $POSTGRESQL_ADMIN_PASSWORD (Optional) - Password for the 'postgres'
 #                           PostgreSQL administrative account
 
+<<<<<<< HEAD:rhel7.rh-postgresql95/Dockerfile
+ENV POSTGIS_EXTENSION=Y \
+    PGCRYPTO_EXTENSION=Y \
+    POSTGRESQL_VERSION=9.5 \
+    POSTGRESQL_PREV_VERSION=9.4 \
+=======
 ENV POSTGRESQL_VERSION=9.6 \
     POSTGRESQL_PREV_VERSION=9.5 \
+>>>>>>> 18d6aeabc4d539009804b1eebbd44ee45911d242:Dockerfile.rhel7
     HOME=/var/lib/pgsql \
     PGUSER=postgres
 
@@ -25,10 +32,17 @@ LABEL summary=$SUMMARY \
       io.k8s.description="$DESCRIPTION" \
       io.k8s.display-name="PostgreSQL 9.6" \
       io.openshift.expose-services="5432:postgresql" \
+<<<<<<< HEAD:rhel7.rh-postgresql95/Dockerfile
+      io.openshift.tags="database,postgresql,postgresql95,rh-postgresql95,postgis,postgis24" \
+      name="rhscl/postgresql-95-rhel7" \
+      com.redhat.component="rh-postgresql95-docker" \
+      version="9.5" \
+=======
       io.openshift.tags="database,postgresql,postgresql96,rh-postgresql96" \
       name="rhscl/postgresql-96-rhel7" \
       com.redhat.component="rh-postgresql96-docker" \
       version="9.6" \
+>>>>>>> 18d6aeabc4d539009804b1eebbd44ee45911d242:Dockerfile.rhel7
       release="1"
 
 EXPOSE 5432
@@ -88,9 +102,9 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     PROMPT_COMMAND=". ${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
-VOLUME ["/var/lib/pgsql/data"]
+VOLUME ["/var/lib/pgsql/data", "/var/run/postgresql"]
 
-# install the Oracle dependencies.
+# install the Oracle dependencies./tmp/oracle_fdw-ORACLE_FDW_2_0_0/oracle_fdw.control
 RUN mkdir -p /tmp/oraclelibs && cd /tmp/oraclelibs && \
     wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
     wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm && \
@@ -101,7 +115,7 @@ COPY root /
 
 ENV PGCONFIG /opt/rh/rh-postgresql96/root/usr/bin
 ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
-ENV PATH /opt/rh/rh-postgresql96/root/usr/bin/:${PATH}
+ENV PATH /opt/rh/rh-postgresql95/root/usr/bin/:${PATH}
 
 # aquire and build ORACLE_FDW_2_0_0
 RUN cd /tmp && \
@@ -110,11 +124,21 @@ RUN cd /tmp && \
     cd oracle_fdw-ORACLE_FDW_2_0_0   && \
     make && \
     make install && \
-    rm -rf /tmp/oraclelibs /tmp/ORACLE_FDW_2_0_0.tar.gz /var/cache/yum
+    rm -rf /tmp/oraclelibs /tmp/ORACLE_FDW_2_0_0.tar.gz /tmp/ORACLE_FDW_2_0_0 /var/cache/yum
+
+# Aquire and build PostGIS 2.4, for PostgreSQL 9.5
+RUN cd /tmp && \
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-3.noarch.rpm && \
+    yum install -y postgis24_95 postgis24_95-client && \
+    /usr/bin/install -c -m 755  /usr/pgsql-9.5/lib/postgis* '/opt/rh/rh-postgresql95/root/usr/lib64/pgsql/' && \
+    /usr/bin/install -c -m 755  /usr/pgsql-9.5/lib/rtpostgis* '/opt/rh/rh-postgresql95/root/usr/lib64/pgsql/' && \
+    /usr/bin/install -c -m 644 /usr/pgsql-9.5/share/extension/postgis* '/opt/rh/rh-postgresql95/root/usr/share/pgsql/extension/' && \
+    mv /usr/pgsql-9.5/share/contrib/postgis-2.4/ /opt/rh/rh-postgresql95/root/usr/share/pgsql/contrib/ && \
+    rm -rf /tmp/pgdg-redhat95-9.5-3.noarch.rpm /var/cache/yum 
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
-
 USER 26
 
 ENTRYPOINT ["container-entrypoint"]

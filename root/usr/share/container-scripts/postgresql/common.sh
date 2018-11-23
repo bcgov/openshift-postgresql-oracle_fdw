@@ -181,11 +181,9 @@ function create_fdw() {
   if [[ -v FDW_NAME && -v FDW_FOREIGN_SERVER && -v FDW_USER && -v FDW_PASS && -v FDW_FOREIGN_SCHEMA && -v FDW_SCHEMA ]]; then
     echo Updating FDW settings...
 
-	
 	psql -d $POSTGRESQL_DATABASE <<EOF
 	BEGIN;
-	CREATE EXTENSION IF NOT EXISTS oracle_fdw;   
-	CREATE EXTENSION IF NOT EXISTS pgcrypto;
+	CREATE EXTENSION IF NOT EXISTS oracle_fdw;
     DROP SERVER IF EXISTS ${FDW_NAME} CASCADE;
     CREATE SERVER $FDW_NAME FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '${FDW_FOREIGN_SERVER}');
     DROP USER MAPPING IF EXISTS FOR public SERVER ${FDW_NAME};
@@ -222,6 +220,32 @@ EOF
   
   fi
 }
+
+function create_postgis_pgcrypto() {
+  echo Updating extensions...
+
+  if test "$POSTGIS_EXTENSION" = "N"; then
+    echo ".. skipping postgis extension."
+  else
+    psql -d $POSTGRESQL_DATABASE -c "CREATE EXTENSION IF NOT EXISTS postgis;COMMIT;"
+    echo ".. enabled postgis extension."
+  fi
+
+  if test "$PGCRYPTO_EXTENSION" = "N"; then
+    echo ".. skipping pgcrypto extension."
+  else
+    psql -d $POSTGRESQL_DATABASE -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;COMMIT;"
+    echo ".. enabled pgcrypto extension."
+  fi
+
+  PSQL_EXIT_STATUS=$?
+  if [ $PSQL_EXIT_STATUS != 0 ]; then
+    echo "psql failed while trying create extensions postgis and pgcrypto." 
+  else
+    echo "success - extensions processed in default database, as per build arguments."
+  fi
+}
+
 
 function set_passwords() {
   if [[ ",$postinitdb_actions," = *,simple_db,* ]]; then
