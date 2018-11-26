@@ -112,7 +112,7 @@ RUN cd /tmp && \
     cd oracle_fdw-ORACLE_FDW_2_0_0   && \
     make && \
     make install && \
-    rm -rf /tmp/oraclelibs /tmp/ORACLE_FDW_2_0_0.tar.gz /tmp/ORACLE_FDW_2_0_0 /var/cache/yum
+    rm -rf /tmp/oraclelibs /tmp/ORACLE_FDW_2_0_0.tar.gz /tmp/oracle_fdw-ORACLE_FDW_2_0_0 /var/cache/yum
 
 # Aquire and build PostGIS 2.4, for PostgreSQL 9.6
 RUN cd /tmp && \
