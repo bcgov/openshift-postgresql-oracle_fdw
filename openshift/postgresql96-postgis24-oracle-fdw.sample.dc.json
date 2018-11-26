@@ -30,7 +30,7 @@
                     ],
                     "from": {
                         "kind": "ImageStreamTag",
-                        "namespace": "csnr-devops-lab-tools",
+                        "namespace": "moe-gwells-tools",
                         "name": "postgis-oracle-fdw:96-24"
                     }
                 }
