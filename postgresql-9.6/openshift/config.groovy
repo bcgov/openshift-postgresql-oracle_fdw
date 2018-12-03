@@ -39,6 +39,7 @@ app {
                     'file':'postgresql-9.6/openshift/build.json',
                     'params':[
                         'NAME': app.build.name,
+                        'SUFFIX': app.build.suffix,
                         'OUTPUT_IMAGE_TAG': app.build.version,
                         'GIT_REPO_URL': "${app.git.uri}",
                         'GIT_REF': "${app.git.ref}"
