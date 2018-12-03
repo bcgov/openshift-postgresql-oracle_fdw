@@ -88,7 +88,7 @@
             "displayName": "Source Context Directory",
             "description": "The source context directory.",
             "required": true,
-            "value": "postgresql96/docker"
+            "value": "postgresql-9.6/docker"
           },
           {
             "name": "OUTPUT_IMAGE_TAG",
