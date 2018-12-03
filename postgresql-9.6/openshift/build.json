@@ -91,7 +91,10 @@
                     }
                 },
                 "postCommit": {},
-                "nodeSelector": null
+                "nodeSelector": null,
+                "completionDeadlineSeconds": 1200,
+                "failedBuildsHistoryLimit": 2,
+                "successfulBuildsHistoryLimit": 5
             }
         }
     ],
