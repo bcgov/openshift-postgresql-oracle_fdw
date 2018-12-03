@@ -1,5 +1,5 @@
 app {
-    name = "${opt.'name'?:'nginx-runtime'}"
+    name = "${opt.'name'?:'postgresql-9.6-oracle-fdw'}"
     namespaces { //can't call environments :(
         'build'{
             namespace = 'bcgov-tools'
