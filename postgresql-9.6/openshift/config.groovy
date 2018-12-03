@@ -36,7 +36,7 @@ app {
         timeoutInSeconds = 60*20 // 20 minutes
         templates = [
                 [
-                    'file':'postgresql96/openshift/build.json',
+                    'file':'postgresql-9.6/openshift/build.json',
                     'params':[
                         'NAME': app.build.name,
                         'OUTPUT_IMAGE_TAG': app.build.version,
