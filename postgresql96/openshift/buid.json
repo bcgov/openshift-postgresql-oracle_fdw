@@ -1,0 +1,101 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+      "name": "postgresql-postgis-oracle-fdw",
+      "creationTimestamp": null
+    },
+    "objects": [
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+              "name": "${NAME}",
+              "labels": {
+                "shared": "true"
+              }
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${NAME}${SUFFIX}"
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "runPolicy": "Serial",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "${GIT_REPO_URL}",
+                        "ref": "${GIT_REF}"
+                    },
+                    "contextDir": "${SOURCE_CONTEXT_DIR}"
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "noCache": false,
+                        "dockerfilePath": "Dockerfile.rhel"
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "${NAME}:${OUTPUT_IMAGE_TAG}"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null
+            }
+        }
+    ],
+    "parameters": [
+        {
+            "name": "NAME",
+            "displayName": "Name",
+            "description": "The name assigned to all objects.",
+            "required": true,
+            "value": "postgresql-postgis-oracle-fdw"
+        },
+        {
+            "name": "SUFFIX",
+            "description": "A suffix appended to the name of all generated objects.",
+            "value": "-dev"
+        },
+        {
+            "name": "GIT_REPO_URL",
+            "displayName": "Git Repo URL",
+            "description": "The URL to your GIT repo, don't use the this default unless your just experimenting.",
+            "required": true,
+            "value": "https://github.com/bcgov/openshift-postgresql-oracle_fdw.git"
+          },
+          {
+            "name": "GIT_REF",
+            "displayName": "Git Reference",
+            "description": "The git reference or branch.",
+            "required": true,
+            "value": "master"
+          },
+          {
+            "name": "SOURCE_CONTEXT_DIR",
+            "displayName": "Source Context Directory",
+            "description": "The source context directory.",
+            "required": true,
+            "value": "postgresql96/docker"
+          },
+          {
+            "name": "OUTPUT_IMAGE_TAG",
+            "displayName": "Output Image Tag",
+            "description": "The tag given to the built image.",
+            "required": true,
+            "value": "latest"
+          }
+    ]
+}
