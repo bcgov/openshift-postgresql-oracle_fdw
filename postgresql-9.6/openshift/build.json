@@ -7,6 +7,32 @@
     },
     "objects": [
         {
+            "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": {
+                    "shared": "true"
+                },
+                "name": "rhel7"
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                },
+                "tags": [
+                    {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "registry.access.redhat.com/rhel7:7.6"
+                        },
+                        "importPolicy": {},
+                        "name": "7.6"
+                    }
+                ]
+            }
+        },
+        {
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
@@ -41,7 +67,11 @@
                     "type": "Docker",
                     "dockerStrategy": {
                         "noCache": false,
-                        "dockerfilePath": "Dockerfile.rhel"
+                        "dockerfilePath": "Dockerfile.rhel",
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "rhel7:7.6"
+                        }
                     }
                 },
                 "output": {
