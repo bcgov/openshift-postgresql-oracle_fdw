@@ -83,11 +83,11 @@
                 "resources": {
                     "requests":{
                         "cpu": "1",
-                        "memory": "256Mi"
+                        "memory": "2Gi"
                     },
                     "limits":{
                         "cpu": "2",
-                        "memory": "1Gi"
+                        "memory": "3Gi"
                     }
                 },
                 "postCommit": {},
