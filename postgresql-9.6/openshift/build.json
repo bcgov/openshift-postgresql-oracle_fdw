@@ -80,7 +80,16 @@
                         "name": "${NAME}:${OUTPUT_IMAGE_TAG}"
                     }
                 },
-                "resources": {},
+                "resources": {
+                    "requests":{
+                        "cpu": "1",
+                        "memory": "256Mi"
+                    },
+                    "limits":{
+                        "cpu": "2",
+                        "memory": "1Gi"
+                    }
+                },
                 "postCommit": {},
                 "nodeSelector": null
             }
