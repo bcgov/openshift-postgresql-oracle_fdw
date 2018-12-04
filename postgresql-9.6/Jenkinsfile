@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         BASE_VERSION = 'v1'
-        IMAGE_STREAM_NAME = 'postgresql-fdw'
+        IMAGE_STREAM_NAME = 'postgresql-9.6-oracle-fdw'
         SOURCE_DIR = 'postgresql-9.6'
     }
     stages {
