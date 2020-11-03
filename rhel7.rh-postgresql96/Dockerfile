@@ -117,13 +117,13 @@ RUN cd /tmp && \
 # Aquire and build PostGIS 2.4, for PostgreSQL 9.6
 RUN cd /tmp && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     yum install -y postgis24_96 postgis24_96-client && \
     /usr/bin/install -c -m 755  /usr/pgsql-9.6/lib/postgis* '/opt/rh/rh-postgresql96/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 755  /usr/pgsql-9.6/lib/rtpostgis* '/opt/rh/rh-postgresql96/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-9.6/share/extension/postgis* '/opt/rh/rh-postgresql96/root/usr/share/pgsql/extension/' && \
     mv /usr/pgsql-9.6/share/contrib/postgis-2.4/ /opt/rh/rh-postgresql96/root/usr/share/pgsql/contrib/ && \
-    rm -rf /tmp/pgdg-redhat96-9.6-3.noarch.rpm /var/cache/yum 
+    rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum 
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
