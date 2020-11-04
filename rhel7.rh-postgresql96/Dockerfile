@@ -37,6 +37,13 @@ EXPOSE 5432
 
 COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
+# Copy entitlements
+COPY ./etc-pki-entitlement /etc/pki/entitlement
+
+# Copy subscription manager configurations
+COPY ./rhsm-conf /etc/rhsm
+COPY ./rhsm-ca /etc/rhsm/ca
+
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
@@ -77,7 +84,6 @@ RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
-
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
@@ -123,7 +129,10 @@ RUN cd /tmp && \
     /usr/bin/install -c -m 755  /usr/pgsql-9.6/lib/rtpostgis* '/opt/rh/rh-postgresql96/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-9.6/share/extension/postgis* '/opt/rh/rh-postgresql96/root/usr/share/pgsql/extension/' && \
     mv /usr/pgsql-9.6/share/contrib/postgis-2.4/ /opt/rh/rh-postgresql96/root/usr/share/pgsql/contrib/ && \
-    rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum 
+    rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum && \
+    # Remove entitlements and Subscription Manager configs
+    rm -rf /etc/pki/entitlement && \
+    rm -rf /etc/rhsm
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
