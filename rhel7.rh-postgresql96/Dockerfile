@@ -52,7 +52,10 @@ COPY ./rhsm-ca /etc/rhsm/ca
 #
 # We need to call 2 (!) yum commands before being able to enable repositories properly
 # This is a workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1479388
-RUN yum repolist > /dev/null && \
+# Initialize /etc/yum.repos.d/redhat.repo
+# See https://access.redhat.com/solutions/1443553
+RUN rm /etc/rhsm-host && \
+    yum repolist > /dev/null && \
     yum install -y yum-utils gettext && \
     yum-config-manager --disable \* &> /dev/null && \
     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
