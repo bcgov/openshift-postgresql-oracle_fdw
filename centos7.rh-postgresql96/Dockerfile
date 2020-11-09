@@ -49,7 +49,6 @@ RUN yum install -y centos-release-scl-rh && \
     localedef -f UTF-8 -i en_US en_US.UTF-8 && \
     test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)" && \
     mkdir -p /var/lib/pgsql/data && \
-    /usr/libexec/fix-permissions /var/lib/pgsql && \
     /usr/libexec/fix-permissions /var/run/postgresql
 
 # install dev tools used to compile ORACLE_FDW_2_0_0
@@ -117,7 +116,8 @@ RUN cd /tmp && \
     /usr/bin/install -c -m 755  /usr/pgsql-9.6/lib/rtpostgis* '/opt/rh/rh-postgresql96/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-9.6/share/extension/postgis* '/opt/rh/rh-postgresql96/root/usr/share/pgsql/extension/' && \
     mv /usr/pgsql-9.6/share/contrib/postgis-2.4/ /opt/rh/rh-postgresql96/root/usr/share/pgsql/contrib/ && \
-    rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum 
+    rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum && \
+    /usr/libexec/fix-permissions /var/lib/pgsql
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
