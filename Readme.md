@@ -60,6 +60,9 @@ RHEL7 based image
 docker build . -f rhel7.rh-postgresql96/Dockerfile
 ```
 
+To build the RHEL7 image you need to setup entitlement and subscription manager configurations.  In the BC OCP3 cluster this was transparent.  In the BC OCP4 cluster this (currently) requires a little extra work.  Platform services will have to provision the required resources into your build environment.  Once in place a build configuration based on  [postgresql96-postgis24-oracle-fdw.sample.bc.yaml](./openshift/postgresql96-postgis24-oracle-fdw.sample.bc.yaml) will mount the resources so they are in place for the `rhel7.rh-postgresql96` [Dockerfile](./rhel7.rh-postgresql96/Dockerfile).  Additional information can be found here; [Build Entitlements](https://github.com/BCDevOps/OpenShift4-Migration/issues/15)
+
+
 CentOS7 based image
 
 ```

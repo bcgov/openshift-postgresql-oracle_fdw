@@ -1,4 +1,4 @@
-FROM rhel7
+FROM registry.access.redhat.com/rhel7
 
 # PostgreSQL image for OpenShift with PostGIS extension.
 # Volumes:
@@ -37,10 +37,9 @@ EXPOSE 5432
 
 COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
-# Copy entitlements
+# Copy entitlements and subscription manager configurations
+# https://github.com/BCDevOps/OpenShift4-Migration/issues/15
 COPY ./etc-pki-entitlement /etc/pki/entitlement
-
-# Copy subscription manager configurations
 COPY ./rhsm-conf /etc/rhsm
 COPY ./rhsm-ca /etc/rhsm/ca
 
