@@ -1,4 +1,4 @@
-FROM rhel7
+FROM registry.access.redhat.com/rhel7
 
 # PostgreSQL image for OpenShift with PostGIS extension.
 # Volumes:
@@ -37,6 +37,12 @@ EXPOSE 5432
 
 COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 
+# Copy entitlements and subscription manager configurations
+# https://github.com/BCDevOps/OpenShift4-Migration/issues/15
+COPY ./etc-pki-entitlement /etc/pki/entitlement
+COPY ./rhsm-conf /etc/rhsm
+COPY ./rhsm-ca /etc/rhsm/ca
+
 # This image must forever use UID 26 for postgres user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
@@ -45,7 +51,10 @@ COPY root/usr/libexec/fix-permissions /usr/libexec/fix-permissions
 #
 # We need to call 2 (!) yum commands before being able to enable repositories properly
 # This is a workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1479388
-RUN yum repolist > /dev/null && \
+# Initialize /etc/yum.repos.d/redhat.repo
+# See https://access.redhat.com/solutions/1443553
+RUN rm /etc/rhsm-host && \
+    yum repolist > /dev/null && \
     yum install -y yum-utils gettext && \
     yum-config-manager --disable \* &> /dev/null && \
     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
@@ -57,7 +66,6 @@ RUN yum repolist > /dev/null && \
     localedef -f UTF-8 -i en_US en_US.UTF-8 && \
     test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)" && \
     mkdir -p /var/lib/pgsql/data && \
-    /usr/libexec/fix-permissions /var/lib/pgsql && \
     /usr/libexec/fix-permissions /var/run/postgresql
 
 # install dev tools used to compile ORACLE_FDW_2_0_0
@@ -77,7 +85,6 @@ RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all
-
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/postgresql \
@@ -117,13 +124,17 @@ RUN cd /tmp && \
 # Aquire and build PostGIS 2.4, for PostgreSQL 9.6
 RUN cd /tmp && \
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
-    rpm -ivh https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm && \
+    rpm -ivh https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     yum install -y postgis24_96 postgis24_96-client && \
     /usr/bin/install -c -m 755  /usr/pgsql-9.6/lib/postgis* '/opt/rh/rh-postgresql96/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 755  /usr/pgsql-9.6/lib/rtpostgis* '/opt/rh/rh-postgresql96/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-9.6/share/extension/postgis* '/opt/rh/rh-postgresql96/root/usr/share/pgsql/extension/' && \
     mv /usr/pgsql-9.6/share/contrib/postgis-2.4/ /opt/rh/rh-postgresql96/root/usr/share/pgsql/contrib/ && \
-    rm -rf /tmp/pgdg-redhat96-9.6-3.noarch.rpm /var/cache/yum 
+    rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum && \
+    # Remove entitlements and Subscription Manager configs
+    rm -rf /etc/pki/entitlement && \
+    rm -rf /etc/rhsm && \
+    /usr/libexec/fix-permissions /var/lib/pgsql
 
 # set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}

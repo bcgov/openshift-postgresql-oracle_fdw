@@ -140,7 +140,7 @@ initdb_wrapper ()
 }
 
 function initialize_database() {
-  initdb_wrapper initdb
+  initdb_wrapper initdb --username=${PGUSER}
 
   # PostgreSQL configuration.
   cat >> "$PGDATA/postgresql.conf" <<EOF
