@@ -112,7 +112,7 @@ RUN mkdir -p /tmp/oraclelibs && cd /tmp/oraclelibs && \
 COPY root /
 
 ENV PGCONFIG /opt/rh/rh-postgresql96/root/usr/bin
-ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
+ENV ORACLE_HOME /usr/lib/oracle/21/client64/lib
 ENV PATH /opt/rh/rh-postgresql96/root/usr/bin/:${PATH}
 
 # ====================================================================================
@@ -143,7 +143,7 @@ RUN cd /tmp && \
     /usr/libexec/fix-permissions /var/lib/pgsql
 
 # Set the oracle library path
-ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH /usr/lib/oracle/21/client64/lib:${LD_LIBRARY_PATH}
 USER 26
 
 ENTRYPOINT ["container-entrypoint"]
