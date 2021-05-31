@@ -10,6 +10,9 @@ FROM centos:centos7
 #  * $POSTGRESQL_ADMIN_PASSWORD (Optional) - Password for the 'postgres'
 #                           PostgreSQL administrative account
 
+# The Git ref (branch/tag) specifying the version of oracle-fdw to use
+ARG ORACLE_FDW_VERSION=master
+
 ENV POSTGIS_EXTENSION=Y \
     PGCRYPTO_EXTENSION=Y \
     POSTGRESQL_VERSION=9.6 \
@@ -51,7 +54,7 @@ RUN yum install -y centos-release-scl-rh && \
     mkdir -p /var/lib/pgsql/data && \
     /usr/libexec/fix-permissions /var/run/postgresql
 
-# install dev tools used to compile ORACLE_FDW_2_0_0
+# Install dev tools used to compile oracle_fdw
 RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum-config-manager --enable rhel-7-server-rpms && \
 	yum-config-manager --enable rhel-7-server-eus-rpms && \
@@ -59,7 +62,7 @@ RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum -y groupinstall 'Development Tools' && \
     yum clean all
 
-# install dev tools used to compile ORACLE_FDW_2_0_0
+# Install dev tools used to compile oracle_fdw
 RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum-config-manager --enable rhel-7-server-rpms && \
 	yum-config-manager --enable rhel-7-server-eus-rpms && \
@@ -85,12 +88,12 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
 
 VOLUME ["/var/lib/pgsql/data", "/var/run/postgresql"]
 
-# install the Oracle dependencies./tmp/oracle_fdw-ORACLE_FDW_2_0_0/oracle_fdw.control
+# Install the Oracle dependencies for oracle_fdw
 RUN mkdir -p /tmp/oraclelibs && cd /tmp/oraclelibs && \
-    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
-    wget -nv https://www.pathfinder.gov.bc.ca/filestore/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm && \
-    rpm -Uvh oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm && \
-    rpm -Uvh oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
+    wget -nv https://download.oracle.com/otn_software/linux/instantclient/211000/oracle-instantclient-basic-21.1.0.0.0-1.x86_64.rpm && \
+    wget -nv https://download.oracle.com/otn_software/linux/instantclient/211000/oracle-instantclient-devel-21.1.0.0.0-1.x86_64.rpm && \
+    rpm -Uvh oracle-instantclient-basic-21.1.0.0.0-1.x86_64.rpm && \
+    rpm -Uvh oracle-instantclient-devel-21.1.0.0.0-1.x86_64.rpm
 
 COPY root /
 
@@ -98,14 +101,17 @@ ENV PGCONFIG /opt/rh/rh-postgresql96/root/usr/bin
 ENV ORACLE_HOME /usr/lib/oracle/12.2/client64/lib
 ENV PATH /opt/rh/rh-postgresql96/root/usr/bin/:${PATH}
 
-# aquire and build ORACLE_FDW_2_0_0
+# ====================================================================================
+# Aquire and build the desired version of oracle_fdw
+# ------------------------------------------------------------------------------------
 RUN cd /tmp && \
-    wget -nv https://github.com/laurenz/oracle_fdw/archive/ORACLE_FDW_2_0_0.tar.gz && \
-    tar -xzf ORACLE_FDW_2_0_0.tar.gz && \
-    cd oracle_fdw-ORACLE_FDW_2_0_0   && \
+    wget -nv https://github.com/laurenz/oracle_fdw/archive/${ORACLE_FDW_VERSION}.tar.gz && \
+    tar -xzf ${ORACLE_FDW_VERSION}.tar.gz && \
+    cd oracle_fdw-${ORACLE_FDW_VERSION} && \
     make && \
     make install && \
-    rm -rf /tmp/oraclelibs /tmp/ORACLE_FDW_2_0_0.tar.gz /tmp/oracle_fdw-ORACLE_FDW_2_0_0 /var/cache/yum
+    rm -rf /tmp/oraclelibs /tmp/${ORACLE_FDW_VERSION}.tar.gz /tmp/oracle_fdw-${ORACLE_FDW_VERSION} /var/cache/yum
+# ====================================================================================
 
 # Aquire and build PostGIS 2.4, for PostgreSQL 9.6
 RUN cd /tmp && \
@@ -119,7 +125,7 @@ RUN cd /tmp && \
     rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum && \
     /usr/libexec/fix-permissions /var/lib/pgsql
 
-# set the oracle library path
+# Set the oracle library path
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.2/client64/lib:${LD_LIBRARY_PATH}
 USER 26
 
