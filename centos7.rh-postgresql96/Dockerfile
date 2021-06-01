@@ -11,7 +11,10 @@ FROM centos:centos7
 #                           PostgreSQL administrative account
 
 # The Git ref (branch/tag) specifying the version of oracle-fdw to use
-ARG ORACLE_FDW_VERSION=master
+# This is referencing a specific revision (master as of 2021.06.01)
+# because there is not a tagged version that works with the 
+# Oracle 21.x client libraries yet
+ARG ORACLE_FDW_VERSION=3035e4453404a143b8154d7b77c6db793fad0e06
 
 ENV POSTGIS_EXTENSION=Y \
     PGCRYPTO_EXTENSION=Y \
