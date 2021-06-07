@@ -4,7 +4,6 @@ apiVersion: v1
 metadata:
   name: ${NAME}-build-template
 objects:
-
   - kind: ImageStream
     apiVersion: v1
     metadata:
@@ -13,7 +12,6 @@ objects:
         name: ${NAME}
         app: ${APP_NAME}${SUFFIX}
         app-group: ${APP_GROUP}
-
   - kind: BuildConfig
     apiVersion: v1
     metadata:
@@ -32,14 +30,14 @@ objects:
         contextDir: ${SOURCE_CONTEXT_DIR}
         secrets:
         - secret:
-            name: etc-pki-entitlement
+            name: ${ENTITLEMENT_SECRET_NAME}
           destinationDir: etc-pki-entitlement
         configMaps:
         - configMap:
-            name: rhsm-conf
+            name: ${RHSM_CONF_CONFIG_MAP}
           destinationDir: rhsm-conf
         - configMap:
-            name: rhsm-ca
+            name: ${RHSM_CA_CONFIG_MAP}
           destinationDir: rhsm-ca
       strategy:
         type: Docker
@@ -64,7 +62,6 @@ objects:
       triggers:
         - type: ImageChange
         - type: ConfigChange
-        
 parameters:
   - name: NAME
     displayName: Name
@@ -80,7 +77,7 @@ parameters:
     displayName: App Name
     description: Used to group components together in the OpenShift console.
     required: true
-    value: BcRegistriesAgent
+    value: BCApp
   - name: APP_GROUP
     displayName: App Group
     description: The name assigned to all of the deployments in this project.
@@ -132,6 +129,21 @@ parameters:
       spec in the Docker file.
     required: false
     value: latest
+  - name: ENTITLEMENT_SECRET_NAME
+    displayName: Entitlement Secret Name
+    description: The name of the secret containing the key for the entitlement.
+    required: true
+    value: platform-services-controlled-etc-pki-entitlement
+  - name: RHSM_CONF_CONFIG_MAP
+    displayName: RHSM Conf Config Map
+    description: The config map containing the rhsm-conf file content.
+    required: true
+    value: platform-services-controlled-rhsm-conf
+  - name: RHSM_CA_CONFIG_MAP
+    displayName: RHSM CA Config Map
+    description: The config map containing the rhsm-ca file content.
+    required: true
+    value: platform-services-controlled-rhsm-ca
   - name: CPU_LIMIT
     displayName: Resources CPU Limit
     description: The resources CPU limit (in cores) for this build; 0 = use default.
